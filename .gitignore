@@ -4,3 +4,7 @@
 *.iws
 .idea/
 out/
+.DS_Store
+Thumbs.db
+
+privateConfig.h
