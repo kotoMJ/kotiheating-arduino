@@ -1,6 +1,8 @@
 #include <ESP8266WiFi.h>
+#include <ESP8266WiFiMulti.h>
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
+#include <ESP8266HTTPClient.h>
 #include <ESP8266mDNS.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
@@ -15,6 +17,7 @@
 #define PIN_RELAY D6
 #define PIN_BUTTON1 D3
 #define PIN_BUTTON2 D7
+#define USE_SERIAL Serial
 
 
 
