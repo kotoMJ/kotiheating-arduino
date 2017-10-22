@@ -17,7 +17,6 @@
 #define PIN_RELAY D6
 #define PIN_BUTTON1 D3
 #define PIN_BUTTON2 D7
-#define USE_SERIAL Serial
 
 
 

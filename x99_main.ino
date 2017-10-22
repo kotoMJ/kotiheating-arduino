@@ -13,6 +13,7 @@ void btnEvent2() {
   }
 }
 
+
 void setup() {
   Serial.begin(115200);
 
@@ -35,6 +36,7 @@ void setup() {
   btnTask.enable();
   logicTask.enable();
   displayTask.enable();
+  clientTask.enable();
 }
 
 void loop() {
