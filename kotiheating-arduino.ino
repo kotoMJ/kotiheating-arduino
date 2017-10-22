@@ -11,7 +11,6 @@
 #include <OneWire.h>
 #include <TaskScheduler.h>
 #include "privateConfig.h"
-
 #define TEMP_INVALID 850
 
 #define PIN_RELAY D6

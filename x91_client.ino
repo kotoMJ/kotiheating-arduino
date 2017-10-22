@@ -44,9 +44,9 @@ void updateTimetableFromServer() {
 void sendStatusToServer() {
       HTTPClient http;
       USE_SERIAL.print("sendStatusToServer [HTTP] begin...\n");
-      http.begin("http://192.168.1.56:8080/api/kotinode/heating/status"); //HTTP
-      http.addHeader("Content-Type", "text/json"); 
-      http.addHeader("key", "Test123"); 
+      http.begin("http://192.168.1.56:8080/api/kotinode/heating/status");
+      http.addHeader("Content-Type", "application/json");
+      http.addHeader("key", DEVICE_PASSWORD); 
           /*
           // or
           http.begin("http://192.168.1.12/test.html");
@@ -57,7 +57,8 @@ void sendStatusToServer() {
           http.setAuthorization("dXNlcjpwYXN3b3Jk");
          */
         String payload = "{";
-        payload += "\"temperature\":11,";
+        payload += "\"temperature\":12,";
+        payload +=  "\"deviceDateTime\": \"" + deviceDateTime() + "\",";
         payload += "\"timetable\":[";
         for (uint8_t day = 0; day < 7; day++) {
           payload += '[';
@@ -75,7 +76,8 @@ void sendStatusToServer() {
         payload += "]}\n";
 
       USE_SERIAL.println(payload);
-      int httpCode = http.POST("{\"temperature\":\"11\"}");
+      //int httpCode = http.POST("{\"temperature\":\"11\"}");
+      int httpCode = http.POST(payload);
       if(httpCode > 0) {
       USE_SERIAL.printf("sendStatusToServer [HTTP] POST... code: %d\n", httpCode);
       if(httpCode == HTTP_CODE_OK) {
@@ -89,3 +91,37 @@ void sendStatusToServer() {
         }
       http.end();
 }
+
+String deviceDateTime(){
+uint32_t wallTime = ntpWallTime();
+
+  String ret = "";
+  if (wallTime == TIME_UNKNOWN) {
+    ret+="UNKNOWN";
+  } else {
+    uint8_t dayOfWeek = ((wallTime / 86400) + 4) % 7;
+    uint8_t hour = (wallTime % 86400) / (60 * 60);
+    char buff[20];
+    String hourStr = itoa(hour,buff,10);
+    uint8_t minute = (wallTime % 3600) / 60;
+    String minuteStr = itoa(minute,buff,10);
+
+    ret+="[hour:"+hourStr+"]";
+    ret+="[minute:"+minuteStr+"]";
+
+    switch (dayOfWeek) {
+      case 0: ret+="[day:SU]"; break;
+      case 1: ret+="[day:MO]"; break;
+      case 2: ret+="[day:TU]"; break;
+      case 3: ret+="[day:WE]"; break;
+      case 4: ret+="[day:TH]"; break;
+      case 5: ret+="[day:FR]"; break;
+      case 6: ret+="[day:SU]"; break;
+    }
+    
+    
+  }
+  return ret;
+}
+
+

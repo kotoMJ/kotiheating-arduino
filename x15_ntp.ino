@@ -33,7 +33,7 @@ void ntpTickCb() {
 }
 
 void ntpSyncStartCb() {
-  if (!WiFi.hostByName("tik.cesnet.cz", ntpServerIP)) {
+  if (!WiFi.hostByName("tak.cesnet.cz", ntpServerIP)) {
     return;
   }
 
