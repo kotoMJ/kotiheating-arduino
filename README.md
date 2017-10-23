@@ -27,6 +27,8 @@ Server expose last known state of the KotiHeating via API TBD.
 
 
 ### HTTPS connection
+Solution based on:https://github.com/esp8266/Arduino/issues/2556
+
 openssl s_client -connect www.kotopeky.cz:443
 
 copy certificate to cert.pem
