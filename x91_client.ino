@@ -47,8 +47,10 @@ void updateTimetableFromServer() {
 		HTTPClient http;
 		USE_SERIAL.print("updateTimetableFromServer [HTTP] begin...\n");
     //http.begin("http://192.168.1.56:8080/api/kotinode/heating/schedule/raw");
-    //http.begin("https://kotopeky.cz/api/kotinode/heating/schedule/raw","21:09:F5:1A:7F:05:E5:A0:82:5B:E6:DC:23:EB:BC:D8:B9:7A:B4:DE");
-    http.begin("https://kotopeky.cz/api/kotinode/heating/schedule/raw","08 2F 51 75 3D 8C 50 A7 CA D1 6D 0E E9 9F DB 9A AD CA E3 DD");
+
+    
+    http.begin("https://kotopeky.cz/api/kotinode/heating/schedule/raw","21:09:F5:1A:7F:05:E5:A0:82:5B:E6:DC:23:EB:BC:D8:B9:7A:B4:DE");
+    //http.begin("https://kotopeky.cz/api/kotinode/heating/schedule/raw","08 2F 51 75 3D 8C 50 A7 CA D1 6D 0E E9 9F DB 9A AD CA E3 DD");
 
     USE_SERIAL.print("[HTTP] GET https://kotopeky.cz/api/kotinode/heating/schedule/raw \n");
     // start connection and send HTTP header
