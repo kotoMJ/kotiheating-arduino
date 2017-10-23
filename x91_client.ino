@@ -1,27 +1,56 @@
 
+//#include <WiFiClientSecure.h>
+
 ESP8266WiFiMulti WiFiMulti;
 #define USE_SERIAL Serial
+
 
 //10 000ms = 10s
 //10 000ms * 60 = 600 000 = 10min
 Task clientTask(600000, TASK_FOREVER, &connectClient, &scheduler, false);
 
+//const char* host = "kotopeky.cz";
+//const int httpsPort = 443;
+
+// Use web browser to view and copy
+// SHA1 fingerprint of the certificate
+//const char* fingerprint = "08 2F 51 75 3D 8C 50 A7 CA D1 6D 0E E9 9F DB 9A AD CA E3 DD";
 
 void connectClient(){
 	if (WiFi.status() == WL_CONNECTED) {
 		updateTimetableFromServer();
-    delay(1000);
-		sendStatusToServer();
+    //delay(1000);
+		//sendStatusToServer();
 	}
 }
 
 void updateTimetableFromServer() {
+  
+//   WiFiClientSecure client;
+//   if (!client.connect(host, httpsPort)) {
+//     USE_SERIAL.println("WiFiClientSecure connection failed");
+//     return;
+//   }
+//   if (client.verify(fingerprint, host)) {
+//     USE_SERIAL.println("certificate matches");
+//   } else {
+//     USE_SERIAL.println("certificate doesn't match");
+//   }
+//
+//   String url = "/api/kotinode/heating/schedule/raw";
+//
+//  client.print(String("GET ") + url + " HTTP/1.1\r\n" +
+//               "Host: " + host + "\r\n" +
+//               "User-Agent: BuildFailureDetectorESP8266\r\n" +
+//               "Connection: close\r\n\r\n");
+               
 		HTTPClient http;
 		USE_SERIAL.print("updateTimetableFromServer [HTTP] begin...\n");
     //http.begin("http://192.168.1.56:8080/api/kotinode/heating/schedule/raw");
-    http.begin("http://kotopeky.cz/api/kotinode/heating/schedule/raw");
+    //http.begin("https://kotopeky.cz/api/kotinode/heating/schedule/raw","21:09:F5:1A:7F:05:E5:A0:82:5B:E6:DC:23:EB:BC:D8:B9:7A:B4:DE");
+    http.begin("https://kotopeky.cz/api/kotinode/heating/schedule/raw","08 2F 51 75 3D 8C 50 A7 CA D1 6D 0E E9 9F DB 9A AD CA E3 DD");
 
-    USE_SERIAL.print("[HTTP] GET...\n");
+    USE_SERIAL.print("[HTTP] GET https://kotopeky.cz/api/kotinode/heating/schedule/raw \n");
     // start connection and send HTTP header
     int httpCode = http.GET();
 
@@ -72,8 +101,9 @@ void updateTimetableFromServer() {
 void sendStatusToServer() {
       HTTPClient http;
       USE_SERIAL.print("sendStatusToServer [HTTP] begin...\n");
-      http.begin("http://192.168.1.56:8080/api/kotinode/heating/status");
-      http.begin("http://kotopeky.cz/api/kotinode/heating/status");
+      //http.begin("http://192.168.1.56:8080/api/kotinode/heating/status");
+      //http.begin("https://kotopeky.cz/api/kotinode/heating/status","21:09:F5:1A:7F:05:E5:A0:82:5B:E6:DC:23:EB:BC:D8:B9:7A:B4:DE");
+      http.begin("https://kotopeky.cz/api/kotinode/heating/status","08 2F 51 75 3D 8C 50 A7 CA D1 6D 0E E9 9F DB 9A AD CA E3 DD");
       http.addHeader("Content-Type", "application/json");
       http.addHeader("key", DEVICE_PASSWORD); 
           /*
