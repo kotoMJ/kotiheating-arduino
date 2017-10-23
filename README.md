@@ -27,7 +27,9 @@ Server expose last known state of the KotiHeating via API TBD.
 
 
 ### HTTPS connection
-Solution based on:https://github.com/esp8266/Arduino/issues/2556
+Solution based on:
+- https://github.com/esp8266/Arduino/issues/2556
+- https://hackaday.io/project/12482-garage-door-opener/log/45617-connecting-the-esp8266-with-tls
 
 openssl s_client -connect www.kotopeky.cz:443
 
