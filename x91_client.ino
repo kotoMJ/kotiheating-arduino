@@ -2,7 +2,9 @@
 ESP8266WiFiMulti WiFiMulti;
 #define USE_SERIAL Serial
 
-Task clientTask(10000, TASK_FOREVER, &connectClient, &scheduler, false);
+//10 000ms = 10s
+//10 000ms * 60 = 600 000 = 10min
+Task clientTask(600000, TASK_FOREVER, &connectClient, &scheduler, false);
 
 
 void connectClient(){
@@ -16,35 +18,62 @@ void connectClient(){
 void updateTimetableFromServer() {
 		HTTPClient http;
 		USE_SERIAL.print("updateTimetableFromServer [HTTP] begin...\n");
-        // configure traged server and url
-        //http.begin("https://192.168.1.12/test.html", "7a 9c f4 db 40 d3 62 5a 6e 21 bc 5c cc 66 c8 3e a1 45 59 38"); //HTTPS
-        http.begin("http://192.168.1.56:8080/api/kotinode/heating/schedule/raw"); //HTTP
+    //http.begin("http://192.168.1.56:8080/api/kotinode/heating/schedule/raw");
+    http.begin("http://kotopeky.cz/api/kotinode/heating/schedule/raw");
 
-        USE_SERIAL.print("[HTTP] GET...\n");
-        // start connection and send HTTP header
-        int httpCode = http.GET();
+    USE_SERIAL.print("[HTTP] GET...\n");
+    // start connection and send HTTP header
+    int httpCode = http.GET();
 
-        // httpCode will be negative on error
-        if(httpCode > 0) {
-            // HTTP header has been send and Server response header has been handled
-            USE_SERIAL.printf("[HTTP] GET... code: %d\n", httpCode);
+    // httpCode will be negative on error
+    if(httpCode > 0) {
+        // HTTP header has been send and Server response header has been handled
+        USE_SERIAL.printf("[HTTP] GET... code: %d\n", httpCode);
 
-            // file found at server
-            if(httpCode == HTTP_CODE_OK) {
-                String payload = http.getString();
-                USE_SERIAL.println(payload);
+        // file found at server
+        if(httpCode == HTTP_CODE_OK) {
+            String payload = http.getString();
+            char paychars[672];//672
+            payload.toCharArray(paychars, payload.length());
+            char separator[] = " ";
+            char *token;
+
+            USE_SERIAL.println(payload.length());
+            USE_SERIAL.println(payload);
+
+            uint8_t incomming_day = 0;
+            uint8_t incomming_hour = 0;
+
+            token = strtok(paychars, separator);
+            USE_SERIAL.print("firsttoken:"); USE_SERIAL.println(token); 
+            while (token != NULL){ // delimiter is the space
+              USE_SERIAL.print("day:"); 
+              USE_SERIAL.print(incomming_day);
+              USE_SERIAL.print("hour:");
+              USE_SERIAL.print(incomming_hour);
+              USE_SERIAL.print("string:");
+              USE_SERIAL.println(token);
+              logicAutoTemp[incomming_day][incomming_hour++] = (int16_t)atoi(token); //update schedule
+              token = strtok(NULL, separator);
+              //incomming_hour++;
+              if (incomming_hour>23) {
+                incomming_day++;
+                incomming_hour = 0;
+              }
             }
-        } else {
-            USE_SERIAL.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
         }
+    } else {
+        USE_SERIAL.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+    }
 
-        http.end();
+    http.end();
 }
 
 void sendStatusToServer() {
       HTTPClient http;
       USE_SERIAL.print("sendStatusToServer [HTTP] begin...\n");
       http.begin("http://192.168.1.56:8080/api/kotinode/heating/status");
+      http.begin("http://kotopeky.cz/api/kotinode/heating/status");
       http.addHeader("Content-Type", "application/json");
       http.addHeader("key", DEVICE_PASSWORD); 
           /*
