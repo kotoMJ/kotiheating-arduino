@@ -27,35 +27,29 @@ Server expose last known state of the KotiHeating via API TBD.
 
 
 ### HTTPS connection
-Solution based on:
-- https://github.com/esp8266/Arduino/issues/2556
-- https://hackaday.io/project/12482-garage-door-opener/log/45617-connecting-the-esp8266-with-tls
 
-openssl s_client -connect www.kotopeky.cz:443
+## Cipher suite supported by device
+Current solution is for chip ESP8266.
+This chip supports TLS1.1 only and only in these two variants:
+1)TLS_RSA_WITH_AES_256_CBC_SHA
+2)TLS_RSA_WITH_AES_128_CBC_SHA
 
-copy certificate to cert.pem
------BEGIN CERTIFICATE-----
-MIICdTCCAd4CCQCpR/0/YtqmrjANBgkqhkiG9w0BAQUFADB/MQswCQYDVQQGEwJD
-WjETMBEGA1UECAwKU29tZS1TdGF0ZTEXMBUGA1UEBwwOSHJhZGVjIEtyYWxvdmUx
-ETAPBgNVBAoMCFJvc3RpLmN6MREwDwYDVQQDDAhyb3N0aS5jejEcMBoGCSqGSIb3
-DQEJARYNaW5mb0Byb3N0aS5jejAeFw0xMzA0MjkwMDU3NDlaFw0xNDA0MjkwMDU3
-NDlaMH8xCzAJBgNVBAYTAkNaMRMwEQYDVQQIDApTb21lLVN0YXRlMRcwFQYDVQQH
-DA5IcmFkZWMgS3JhbG92ZTERMA8GA1UECgwIUm9zdGkuY3oxETAPBgNVBAMMCHJv
-c3RpLmN6MRwwGgYJKoZIhvcNAQkBFg1pbmZvQHJvc3RpLmN6MIGfMA0GCSqGSIb3
-DQEBAQUAA4GNADCBiQKBgQC7xSvV88rnKf/j2XyMNzaahIwhO7OvizvMkeX+OGYA
-P2mbUMFWCJNTL22udWvpUNXQ1PsjxvQ94c2dgZzKqt3YrEukCPuq+fvgMZ+bNs6C
-bPD9qr3rKD2DDQNb/fRZ/NK6QGg8/meQdLlgSHyoA7bL3yGsL0vk5fEUIpIfYp55
-cwIDAQABMA0GCSqGSIb3DQEBBQUAA4GBAFhc477qkTMg3KOqfzRDb8s39i22x4RZ
-6DdoLib9JyAtg8TYS4F+hutxi0kFJ1sz7LQ0vUp2QuKBrLwWyOXbLzmZXtfTX//P
-0rHLhgjPxPtQo9DYQI8NPqSrDM+dX4TflmaBBkfAkFbV3PVVp5NUqCLtUdcuLNhk
-BNH/pCxU55Kz
------END CERTIFICATE-----
+You can check your device running this program on it:
+ `http.begin("https://www.howsmyssl.com/a/check", "4D 05 9F 78 25 B2 82 98 3A B9 4D 4D 41 71 FA D3 DF C4 65 B9");`
 
-openssl x509 -noout -in cert.pem -fingerprint -sha1
 
-SHA1 Fingerprint=21:09:F5:1A:7F:05:E5:A0:82:5B:E6:DC:23:EB:BC:D8:B9:7A:B4:DE
-
-Use it in code:
-
-HTTPClient http;
-http.begin("https://kotopeky.cz/api/kotinode/heating/schedule/raw","21:09:F5:1A:7F:05:E5:A0:82:5B:E6:DC:23:EB:BC:D8:B9:7A:B4:DE");
+## Cipher cuite supported by server
+Then check which ciphers has been supported by server (kotopeky.cz in my case):
+ 
+`nmap --script ssl-enum-ciphers -p 443 kotopeky.cz`
+ 
+ If you find device's suite in the server's table, everything is ok.
+ Otherwise you have to force server to use device's cipher, or change device.
+ 
+## Key Fingerprint
+ 
+If server's and device's cipher match. 
+Then start connection using SHA1 fingerprint (look at the safari status bar for example).
+In my case it's this:
+ 
+ `http.begin("https://kotopeky.cz/api/kotinode/heating/status","08 2F 51 75 3D 8C 50 A7 CA D1 6D 0E E9 9F DB 9A AD CA E3 DD");`
