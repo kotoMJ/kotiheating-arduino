@@ -44,7 +44,7 @@ Then check which ciphers has been supported by server (kotopeky.cz in my case):
 `nmap --script ssl-enum-ciphers -p 443 kotopeky.cz`
  
  If you find device's suite in the server's table, everything is ok.
- Otherwise you have to force server to use device's cipher, or change device.
+ Otherwise you have to force server to support also device's cipher, or change device to fit server's cipher suite.
  
 #### Key Fingerprint
  
