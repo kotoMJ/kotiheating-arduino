@@ -2,6 +2,8 @@
 
 IoT KotiHeating project for remote heating control realized with Arduino HW.
 
+![KoTiHeating](./extras/photos/20171016_222606-COLLAGE.jpg "KoTiHeating")
+
 ## Functionality
 
 KotiHeating offers 3 heating modes:
