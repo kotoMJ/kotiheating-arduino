@@ -54,4 +54,4 @@ If server's and device's cipher match.
 Then start connection using SHA1 fingerprint (look at the safari status bar for example).
 In my case it's this:
  
- `http.begin("https://kotopeky.cz/api/kotinode/heating/status","08 2F 51 75 3D 8C 50 A7 CA D1 6D 0E E9 9F DB 9A AD CA E3 DD");`
+ `http.begin("https://kotopeky.cz/api/kotinode/heating/status","63 FD D7 BB B4 A5 6C 00 57 0F 23 A2 FD 27 15 96 4A C2 4D 99");`

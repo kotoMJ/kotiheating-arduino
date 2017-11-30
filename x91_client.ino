@@ -7,7 +7,8 @@ ESP8266WiFiMulti WiFiMulti;
 
 //10 000ms = 10s
 //10 000ms * 60 = 600 000 = 10min
-Task clientTask(60000, TASK_FOREVER, &connectClient, &scheduler, false);
+//10 000ms * 60 * 5 = 300 000 = 5min
+Task clientTask(300000, TASK_FOREVER, &connectClient, &scheduler, false);
 
 //const char* host = "kotopeky.cz";
 //const int httpsPort = 443;
@@ -27,7 +28,7 @@ void connectClient(){
 void updateTimetableFromServer() {
 		HTTPClient http;
     //http.begin("http://192.168.0.108:8080/api/kotinode/heating/schedule/raw");
-    http.begin("https://kotopeky.cz/api/kotinode/heating/schedule/raw","08 2F 51 75 3D 8C 50 A7 CA D1 6D 0E E9 9F DB 9A AD CA E3 DD");
+    http.begin("https://kotopeky.cz/api/kotinode/heating/schedule/raw","63 FD D7 BB B4 A5 6C 00 57 0F 23 A2 FD 27 15 96 4A C2 4D 99");
     http.addHeader("key", DEVICE_PASSWORD); 
     USE_SERIAL.print("[HTTP] GET https://kotopeky.cz/api/kotinode/heating/schedule/raw \n");
     // start connection and send HTTP header
@@ -80,7 +81,7 @@ void updateTimetableFromServer() {
 void sendStatusToServer() {
       HTTPClient http;
       //http.begin("http://192.168.0.108:8080/api/kotinode/heating/status");
-      http.begin("https://kotopeky.cz/api/kotinode/heating/status","08 2F 51 75 3D 8C 50 A7 CA D1 6D 0E E9 9F DB 9A AD CA E3 DD");
+      http.begin("https://kotopeky.cz/api/kotinode/heating/status","63 FD D7 BB B4 A5 6C 00 57 0F 23 A2 FD 27 15 96 4A C2 4D 99");
       http.addHeader("Content-Type", "application/json");
       http.addHeader("key", DEVICE_PASSWORD); 
         String payload = "{";
