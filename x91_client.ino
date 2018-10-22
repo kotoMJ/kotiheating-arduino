@@ -8,29 +8,38 @@ ESP8266WiFiMulti WiFiMulti;
 //10 000ms = 10s
 //10 000ms * 60 = 600 000 = 10min
 //10 000ms * 60 * 5 = 300 000 = 5min
-Task clientTask(300000, TASK_FOREVER, &connectClient, &scheduler, false);
-
-//const char* host = "kotopeky.cz";
-//const int httpsPort = 443;
-
-// Use web browser to view and copy
-// SHA1 fingerprint of the certificate
-//const char* fingerprint = "08 2F 51 75 3D 8C 50 A7 CA D1 6D 0E E9 9F DB 9A AD CA E3 DD";
+Task clientTask(60000, TASK_FOREVER, &connectClient, &scheduler, false);
 
 void connectClient(){
 	if (WiFi.status() == WL_CONNECTED) {
-		updateTimetableFromServer();
+    String sha1 = getSHA1();
+		updateTimetableFromServer(sha1);
     delay(3000);
-		sendStatusToServer();
+		sendStatusToServer(sha1);
 	}
 }
 
-void updateTimetableFromServer() {
+String getSHA1(){
+  String sha1;
+  HTTPClient http;
+  http.begin("http://peaceful-shelf-58932.herokuapp.com/fingerprint/sha1");
+  int httpCode = http.GET();
+  //String ret = "68 47 F6 2E 5D 89 DC E6 5E 0B 81 EB DE 85 A0 82 CB 05 11 7A";//default
+  if(httpCode > 0) {
+    sha1 =  http.getString();
+    USE_SERIAL.println("[HTTP] GET SHA1 from peaceful-shelf-58932.herokuapp.com success!... sha1:" + sha1); 
+  }else {
+    USE_SERIAL.printf("[HTTP] GET SHA1 from peaceful-shelf-58932.herokuapp.com FAILURE!... code: %d\n", httpCode); 
+  }
+  http.end();
+  return sha1;
+}
+
+void updateTimetableFromServer(String sha1Fingerprint) {
 		HTTPClient http;
-    //http.begin("http://192.168.0.108:8080/api/kotinode/heating/schedule/raw");
-    http.begin("https://kotopeky.cz/api/kotinode/heating/schedule/raw","63 FD D7 BB B4 A5 6C 00 57 0F 23 A2 FD 27 15 96 4A C2 4D 99");
+    http.begin("https://kotopeky.cz/api/kotinode/heating/schedule/raw/"+DEVICE_ID,sha1Fingerprint);
     http.addHeader("key", DEVICE_PASSWORD); 
-    USE_SERIAL.print("[HTTP] GET https://kotopeky.cz/api/kotinode/heating/schedule/raw \n");
+    USE_SERIAL.print("[HTTP] GET https://kotopeky.cz/api/kotinode/heating/schedule/raw/"+DEVICE_ID+"\n");
     // start connection and send HTTP header
     int httpCode = http.GET();
 
@@ -78,16 +87,17 @@ void updateTimetableFromServer() {
     http.end();
 }
 
-void sendStatusToServer() {
+void sendStatusToServer(String sha1Fingerprint) {
       HTTPClient http;
-      //http.begin("http://192.168.0.108:8080/api/kotinode/heating/status");
-      http.begin("https://kotopeky.cz/api/kotinode/heating/status","63 FD D7 BB B4 A5 6C 00 57 0F 23 A2 FD 27 15 96 4A C2 4D 99");
+      http.begin("https://kotopeky.cz/api/kotinode/heating/status/"+DEVICE_ID,sha1Fingerprint);
       http.addHeader("Content-Type", "application/json");
       http.addHeader("key", DEVICE_PASSWORD); 
         String payload = "{";
+        payload +=  "\"heatingId\": \"" + DEVICE_ID + "\",";
+        payload +=  "\"heatingName\": \"KotoOffice\",";
         payload += "\"temperature\": \"" + String(tempValue) + "\",";
-        payload +=  "\"deviceDateTime\": \"" + deviceDateTime() + "\",";
-        payload +=  "\"deviceMode\": \"" + String(logicMode) + "\",";
+        payload +=  "\"heatingDateTime\": \"" + deviceDateTime() + "\",";
+        payload +=  "\"heatingMode\": \"" + String(logicMode) + "\",";
         payload += "\"timetable\":[";
         for (uint8_t day = 0; day < 7; day++) {
           payload += '[';

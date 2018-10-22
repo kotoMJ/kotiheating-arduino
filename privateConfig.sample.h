@@ -7,5 +7,7 @@
 
 #define DEVICE_PASSWORD "device password"
 
+#define DEVICE_ID "0"
+
 
 #endif
