@@ -7,7 +7,8 @@ IPAddress ntpServerIP;
 #define TIME_UNKNOWN 0xffffffffUL
 uint32_t currentTime;
 uint32_t lastTimeSync;
-int32_t tzOffset;
+int32_t summerOffset;
+int32_t midEeuOffset;
 
 #define NTP_PACKET_SIZE 48
 byte ntpBuffer[NTP_PACKET_SIZE];
@@ -16,14 +17,14 @@ byte ntpBuffer[NTP_PACKET_SIZE];
 void ntpSetup() {
   currentTime = TIME_UNKNOWN;
   lastTimeSync = 0;
-  tzOffset = 3600*2;
+  summerOffset = 3600*2;
+  midEeuOffset = 3600*1
   ntpUdp.begin(2390);
 }
 
 uint32_t ntpWallTime() {
   if (currentTime == TIME_UNKNOWN) return TIME_UNKNOWN;
-  
-  return currentTime + tzOffset;
+  return currentTime + midEeuOffset;
 }
 
 void ntpTickCb() {
