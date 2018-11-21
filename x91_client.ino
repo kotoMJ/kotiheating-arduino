@@ -98,7 +98,7 @@ void sendStatusToServer(String sha1Fingerprint) {
         payload += "\"temperature\": \"" + String(tempValue) + "\",";
         payload +=  "\"heatingDateTime\": \"" + deviceDateTime() + "\",";
         payload +=  "\"heatingMode\": \"" + String(logicMode) + "\",";
-        payload += "\"timetable\":[";
+        payload += "\"timetableDevice\":[";
         for (uint8_t day = 0; day < 7; day++) {
           payload += '[';
           for (uint8_t hour = 0; hour < 24; hour++) {
