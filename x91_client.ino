@@ -155,7 +155,7 @@ String deviceDateTime(){
 		  case 3: ret+="[day:WE]"; break;
 		  case 4: ret+="[day:TH]"; break;
 		  case 5: ret+="[day:FR]"; break;
-		  case 6: ret+="[day:SU]"; break;
+		  case 6: ret+="[day:SA]"; break;
 		}
 
 
