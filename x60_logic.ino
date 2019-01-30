@@ -28,6 +28,14 @@ int16_t logicAutoTemp[7][24] = {
   {150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150, 150}, // SO
 };
 
+void logicModeForce(String forceModeString) {
+  uint8_t forceMode = forceModeString.toInt();
+  if (forceMode==LOGIC_MODE_OFF || forceMode==LOGIC_MODE_MANUAL || forceMode==LOGIC_MODE_AUTO) {
+    logicMode = forceMode;
+    logicCb();
+  }
+}
+
 void logicModeSwitch() {
   logicMode++;
   if (logicMode >= LOGIC_MODE_MAX) {

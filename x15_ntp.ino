@@ -18,7 +18,7 @@ void ntpSetup() {
   currentTime = TIME_UNKNOWN;
   lastTimeSync = 0;
   summerOffset = 3600*2;
-  midEeuOffset = 3600*1
+  midEeuOffset = 3600*1;
   ntpUdp.begin(2390);
 }
 

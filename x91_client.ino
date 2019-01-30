@@ -14,6 +14,7 @@ void connectClient(){
 	if (WiFi.status() == WL_CONNECTED) {
     String sha1 = getSHA1();
 		updateTimetableFromServer(sha1);
+		updateModeFromServer(sha1)
     delay(3000);
 		sendStatusToServer(sha1);
 	}
@@ -37,9 +38,9 @@ String getSHA1(){
 
 void updateTimetableFromServer(String sha1Fingerprint) {
 		HTTPClient http;
-    http.begin("https://kotopeky.cz/api/kotinode/heating/schedule/raw/"+DEVICE_ID,sha1Fingerprint);
+    http.begin("https://kotopeky.cz/api/kotinode/heating/schedule/raw/"+ String(DEVICE_ID),sha1Fingerprint);
     http.addHeader("key", DEVICE_PASSWORD); 
-    USE_SERIAL.print("[HTTP] GET https://kotopeky.cz/api/kotinode/heating/schedule/raw/"+DEVICE_ID+"\n");
+    USE_SERIAL.print("[HTTP] GET https://kotopeky.cz/api/kotinode/heating/schedule/raw/"+String(DEVICE_ID)+"\n");
     // start connection and send HTTP header
     int httpCode = http.GET();
 
@@ -87,13 +88,38 @@ void updateTimetableFromServer(String sha1Fingerprint) {
     http.end();
 }
 
+void updateModeFromServer(String sha1Fingerprint) {
+    String forceModeString;
+    HTTPClient http;
+    http.begin("https://kotopeky.cz/api/kotinode/heating/mode/raw/"+String(DEVICE_ID),sha1Fingerprint);
+    http.addHeader("key", DEVICE_PASSWORD); 
+    USE_SERIAL.print("[HTTP] GET https://kotopeky.cz/api/kotinode/heating/mode/raw/"+String(DEVICE_ID)+"\n");
+    // start connection and send HTTP header
+    int httpCode = http.GET();
+
+    // httpCode will be negative on error
+    if(httpCode > 0) {
+        // HTTP header has been send and Server response header has been handled
+        USE_SERIAL.printf("[HTTP] GET... code: %d\n", httpCode);
+        if(httpCode == HTTP_CODE_OK) {
+            forceModeString =  http.getString();
+            USE_SERIAL.println("[HTTP] GET forceMode success!... forceMode:" + forceModeString); 
+           logicModeForce(forceModeString);
+        }
+    } else {
+        USE_SERIAL.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+    }
+
+    http.end();
+}
+
 void sendStatusToServer(String sha1Fingerprint) {
       HTTPClient http;
-      http.begin("https://kotopeky.cz/api/kotinode/heating/status/"+DEVICE_ID,sha1Fingerprint);
+      http.begin("https://kotopeky.cz/api/kotinode/heating/status/"+String(DEVICE_ID),sha1Fingerprint);
       http.addHeader("Content-Type", "application/json");
       http.addHeader("key", DEVICE_PASSWORD); 
         String payload = "{";
-        payload +=  "\"heatingId\": \"" + DEVICE_ID + "\",";
+        payload +=  "\"heatingId\": \"" + String(DEVICE_ID) + "\",";
         payload +=  "\"heatingName\": \"KotoOffice\",";
         payload += "\"temperature\": \"" + String(tempValue) + "\",";
         payload +=  "\"heatingDateTime\": \"" + deviceDateTime() + "\",";
