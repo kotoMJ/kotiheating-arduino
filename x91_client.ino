@@ -8,13 +8,13 @@ ESP8266WiFiMulti WiFiMulti;
 //10 000ms = 10s
 //10 000ms * 60 = 600 000 = 10min
 //10 000ms * 60 * 5 = 300 000 = 5min
-Task clientTask(60000, TASK_FOREVER, &connectClient, &scheduler, false);
+Task clientTask(150000, TASK_FOREVER, &connectClient, &scheduler, false);
 
 void connectClient(){
 	if (WiFi.status() == WL_CONNECTED) {
     String sha1 = getSHA1();
 		updateTimetableFromServer(sha1);
-		updateModeFromServer(sha1)
+		updateModeFromServer(sha1);
     delay(3000);
 		sendStatusToServer(sha1);
 	}
@@ -124,7 +124,7 @@ void sendStatusToServer(String sha1Fingerprint) {
         payload += "\"temperature\": \"" + String(tempValue) + "\",";
         payload +=  "\"heatingDateTime\": \"" + deviceDateTime() + "\",";
         payload +=  "\"heatingMode\": \"" + String(logicMode) + "\",";
-        payload += "\"timetableDevice\":[";
+        payload += "\"timetable\":[";
         for (uint8_t day = 0; day < 7; day++) {
           payload += '[';
           for (uint8_t hour = 0; hour < 24; hour++) {
